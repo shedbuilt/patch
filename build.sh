@@ -1,12 +1,12 @@
 #!/bin/bash
-case "$SHED_BUILD_MODE" in
-    toolchain)
-        SHEDPKG_PREFIX='/tools'
-        ;;
-    *)
-        SHEDPKG_PREFIX='/usr'
-        ;;
-esac
-./configure --prefix=$SHEDPKG_PREFIX && \
-make -j $SHED_NUM_JOBS && \
-make DESTDIR="$SHED_FAKE_ROOT" install
+declare -A SHED_PKG_LOCAL_OPTIONS=${SHED_PKG_OPTIONS_ASSOC}
+# Configure
+SHED_PKG_LOCAL_PREFIX='/usr'
+if [ -n "${SHED_PKG_LOCAL_OPTIONS[toolchain]}" ]; then
+    SHED_PKG_LOCAL_PREFIX='/tools'
+fi
+./configure --prefix=$SHED_PKG_LOCAL_PREFIX &&
+
+# Build and Install
+make -j $SHED_NUMJOBS &&
+make DESTDIR="$SHED_FAKEROOT" install
